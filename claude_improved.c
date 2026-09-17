@@ -195,12 +195,6 @@ static void trimWhitespace(char *s) { // removes extra spaces from the front and
     s[newLen] = '\0'; // add the new end-of-string marker
 }
 
-/* Parses the remainder of an EMAIL command line (everything after
- * "EMAIL ") into the Email struct. Fields are comma delimited:
- *   <category>,<subject>,<date>
- * The subject may contain spaces but not commas. Returns 1 on success,
- * 0 if the line could not be parsed into exactly three fields (e.g. a
- * missing or misplaced comma). */
 static int parseEmailFields(const char *rest, Email *e) { // splits "category,subject,date" into the Email struct
     char buffer[1024]; // local working copy of the text so we can safely cut it up
     strncpy(buffer, rest, sizeof(buffer) - 1); // copy the input text into our buffer
@@ -269,11 +263,8 @@ static void handleCountCommand(MaxHeap *h) { // processes a "COUNT" command
     printf("There are %d emails to read.\n", count); // display that count to the user
 }
 
-/* ------------------------------------------------------------------ */
-/* Main                                                                 */
-/* ------------------------------------------------------------------ */
 
-int main(void) { // program entry point
+int main(void) { // main program 
     MaxHeap heap; // the priority queue that will hold all unread emails
     heapInit(&heap); // set up the heap before we start reading commands
 
@@ -281,19 +272,18 @@ int main(void) { // program entry point
     while (fgets(line, sizeof(line), stdin) != NULL) { // read input line by line until end of file
         stripLineEnding(line); // remove the trailing newline character, if any
 
-        /* Skip blank lines */
         if (line[0] == '\0') continue; // ignore empty lines and move to the next one
 
-        if (strncmp(line, "EMAIL ", 6) == 0) { // check if the line starts with "EMAIL "
+        if (strncmp(line, "EMAIL ", 6) == 0) { // check if the line starts with EMAIL 
             handleEmailCommand(&heap, line); // hand it off to the EMAIL command handler
-        } else if (strcmp(line, "NEXT") == 0) { // check if the line is exactly "NEXT"
+        } else if (strcmp(line, "NEXT") == 0) { // check if the line is exactly NEXT
             handleNextCommand(&heap); // hand it off to the NEXT command handler
-        } else if (strcmp(line, "READ") == 0) { // check if the line is exactly "READ"
+        } else if (strcmp(line, "READ") == 0) { // check if the line is exactly READ
             handleReadCommand(&heap); // hand it off to the READ command handler
-        } else if (strcmp(line, "COUNT") == 0) { // check if the line is exactly "COUNT"
+        } else if (strcmp(line, "COUNT") == 0) { // check if the line is exactly COUNT
             handleCountCommand(&heap); // hand it off to the COUNT command handler
         }
-        /* Unrecognized commands are ignored. */
+
     }
 
     heapFree(&heap); // release the heap's memory before the program exits
